@@ -4,9 +4,9 @@ import Questionnaire from './components/Questionnaire';
 import RoutineDisplay from './components/RoutineDisplay';
 
 const App = () => {
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState(null);
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data) => {
     setFormData(data); // Guardar los datos de las respuestas
   };
 

@@ -16,14 +16,14 @@ const questions = [
   { question: '¿Tienes alguna preferencia en cuanto a tipo de entrenamiento? (Ej. Cardio, fuerza, HIIT, etc.)', options: ['Cardio', 'Fuerza', 'HIIT', 'Mezcla de todos'] },
 ];
 
-const Questionnaire = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
+const Questionnaire = ({ onSubmit }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState([]);  // Sin tipo de TypeScript
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const genAI = new GoogleGenerativeAI('AIzaSyBU7_VsTlpFsaMahaynoZwsgKQJRKzjoNI');
 
-  const handleAnswer = (answer: string) => {
+  const handleAnswer = (answer) => {
     const newAnswers = [...answers, answer];
     setAnswers(newAnswers);
 
@@ -39,7 +39,7 @@ const Questionnaire = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
     }
   };
 
-  const handleSubmit = async (answers: string[]) => {
+  const handleSubmit = async (answers) => {
     setIsSubmitting(true);
 
     // Crear un contexto detallado basado en las respuestas
@@ -109,7 +109,7 @@ const Questionnaire = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent(prompt);
 
-      const text = result.response.text();
+      const text = await result.response.text();
       onSubmit(text); // Pasamos la rutina generada al componente padre
     } catch (error) {
       console.error('Error:', error);
@@ -146,7 +146,7 @@ const Questionnaire = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
         />
       ) : (
         <div style={{ color: 'black' }}>
-        
+          {/* Aquí podrías mostrar un mensaje final o una vista de resultado */}
         </div>
       )}
     </div>

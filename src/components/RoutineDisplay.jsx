@@ -1,6 +1,6 @@
 import React from 'react';
 
-const RoutineDisplay = ({ data }: { data: string }) => {
+const RoutineDisplay = ({ data }) => {
     return (
       <div style={{ 
         margin: '20px auto',

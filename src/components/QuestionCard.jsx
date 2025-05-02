@@ -1,12 +1,7 @@
 import React from 'react';
 
-interface QuestionCardProps {
-  question: string;
-  options: string[];
-  onAnswer: (answer: string) => void;
-}
 
-const QuestionCard: React.FC<QuestionCardProps> = ({ question, options, onAnswer }) => {
+const QuestionCard = ({ question, options, onAnswer }) => {
   return (
     <div style={{
         backgroundColor: '#87CEEB',
