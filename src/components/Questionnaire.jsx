@@ -18,7 +18,7 @@ const questions = [
 
 const Questionnaire = ({ onSubmit }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);  // Sin tipo de TypeScript
+  const [answers, setAnswers] = useState([]);  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const genAI = new GoogleGenerativeAI('AIzaSyBU7_VsTlpFsaMahaynoZwsgKQJRKzjoNI');
@@ -42,10 +42,10 @@ const Questionnaire = ({ onSubmit }) => {
   const handleSubmit = async (answers) => {
     setIsSubmitting(true);
 
-    // Crear un contexto detallado basado en las respuestas
+    // Contexto detallado basado en las respuestas
     let detailedAnswers = '';
 
-    // Respuesta a la pregunta de lesiones y ubicación
+    // Respuesta a la pregunta en caso que tenga lesiones
     if (answers[0] === 'Sí') {
       const injuryLocation = answers[1] || 'Ubicación no especificada';
       detailedAnswers += `Lesión en el ${injuryLocation}. `;
@@ -110,7 +110,7 @@ const Questionnaire = ({ onSubmit }) => {
       const result = await model.generateContent(prompt);
 
       const text = await result.response.text();
-      onSubmit(text); // Pasamos la rutina generada al componente padre
+      onSubmit(text); 
     } catch (error) {
       console.error('Error:', error);
       onSubmit("Ocurrió un error al generar tu rutina. Por favor intenta nuevamente.");
@@ -146,7 +146,7 @@ const Questionnaire = ({ onSubmit }) => {
         />
       ) : (
         <div style={{ color: 'black' }}>
-          {/* Aquí podrías mostrar un mensaje final o una vista de resultado */}
+         
         </div>
       )}
     </div>
