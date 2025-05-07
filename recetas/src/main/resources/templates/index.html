@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${Titulo}">Recetas App</title>
+</head>
+<body>
+<h1 th:text="${Titulo}">Servidor conectado</h1>
+
+<form id="ingredientes-form">
+    <label for="ingredientes">Ingredientes (separados por coma):</label>
+    <input
+            type="text"
+            id="ingredientes"
+            name="ingredientes"
+            placeholder="e.g. tomate, queso, albahaca"
+            required
+    />
+    <button type="submit">Generar receta</button>
+</form>
+
+<div id="resultado" style="margin-top:1em;"></div>
+
+<!-- Carga el script estático -->
+<script th:src="@{/main.js}"></script>
+</body>
+</html>

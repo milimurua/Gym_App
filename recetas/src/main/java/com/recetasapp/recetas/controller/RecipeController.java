@@ -1,33 +1,36 @@
 package com.recetasapp.recetas.controller;
 
-import com.recetasapp.recetas.service.*;
-import com.recetasapp.recetas.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;        // ← este
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.recetasapp.recetas.model.IngredientsRequest;
+import com.recetasapp.recetas.service.RecipeService;
 
-@RestController
-@RequestMapping("/api")
+
+@Controller
 public class RecipeController {
 
-    @Autowired
-    private RecipeService recipeService;
+    private final RecipeService recipeService;
 
-    @PostMapping(
-            path = "/recetas",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<String> generateRecipe(@RequestBody IngredientsRequest request) {
-        String respuesta = recipeService.getRecipeConIA(request.getIngredients());
-        return ResponseEntity.ok(respuesta);
+    public RecipeController(RecipeService recipeService) {
+        this.recipeService = recipeService;
     }
 
-    @GetMapping("/ping")
-    public ResponseEntity<String> ping() {
-        return ResponseEntity.ok("✅ API Recetas viva y respondiendo.");
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("Titulo", "Recetas App – Servidor conectado");
+        return "index";
     }
 
+    // POST "/api/recetas" → devuelve el texto generado
+    @PostMapping("/api/recetas")
+    public @ResponseBody ResponseEntity<String> generar(@RequestBody IngredientsRequest req) {
+        String prompt = "Crea una receta con estos ingredientes: " + String.join(", ", req.getIngredients());
+        String recipe = recipeService.generateText(prompt);  // Asegúrate de que devuelva String
+        return ResponseEntity.ok(recipe);
+    }
 }
