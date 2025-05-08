@@ -1,0 +1,11 @@
+{
+  "name": "frontendrecetas",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+     "start": "npx http-server public -p 3000 --proxy http://localhost:8080"
+  },
+  "devDependencies": {
+    "http-server": "14.1.1"
+  }
+}
