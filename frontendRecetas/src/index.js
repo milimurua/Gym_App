@@ -1,61 +1,69 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const debugEl  = document.getElementById('debug');
-  const recipeEl = document.getElementById('recipe');
-  const form     = document.getElementById('recipe-form');
-  const addBtn   = document.getElementById('add-group');
+  const form            = document.getElementById('recipe-form');
+  const addBtn          = document.getElementById('add-group');
+  const debugEl         = document.getElementById('debug');
+  const recipeEl        = document.getElementById('recipe');
+  const submitBtn       = document.getElementById('generate-btn');
+  const groupsContainer = document.getElementById('ingredient-groups');
+  const API_BASE        = window.API_BASE || '';
 
-  // Añadir nuevos grupos de ingredientes
-  addBtn.addEventListener('click', () => {
-    const container = document.getElementById('ingredient-groups');
+  // Crear nuevo grupo con botón de remover
+  function createGroup() {
     const div = document.createElement('div');
     div.className = 'group';
     div.innerHTML = `
-      <label>Ingredientes (separados por comas):</label><br>
-      <input type="text" class="ingredients" placeholder="Ej: queso, jamón"/><br>
+      <input type="text" class="ingredients" placeholder="Ej: queso, jamón">
+      <button type="button" class="remove-btn" title="Quitar este grupo">×</button>
     `;
-    container.appendChild(div);
-  });
+    div.querySelector('.remove-btn')
+       .addEventListener('click', () => div.remove());
+    groupsContainer.appendChild(div);
+  }
 
-  // Detecta host dinámicamente, pero fuerza el puerto 8080
-  const backendBase = window.API_BASE;
+  // Asignar remover al grupo inicial
+  document.querySelectorAll('.group .remove-btn')
+    .forEach(btn => btn.addEventListener('click', e => e.target.parentElement.remove()));
 
+  // Añadir grupo al hacer clic
+  addBtn.addEventListener('click', createGroup);
+
+  // Manejar envío
   form.addEventListener('submit', async e => {
     e.preventDefault();
+    submitBtn.disabled = true;
+    recipeEl.textContent = '';
+    debugEl.style.display = 'block';
+    debugEl.textContent = 'Preparando petición...';
 
-    // 1) Lee todos los inputs .ingredients y genera un array plano
+    // Recoger ingredientes
     const inputs = Array.from(document.querySelectorAll('.ingredients'));
-    const ingredients = inputs.flatMap(i =>
-      i.value
-       .split(',')
-       .map(s => s.trim())
-       .filter(Boolean)
-    );
+    const ingredients = inputs
+      .flatMap(i => i.value.split(',')
+      .map(s => s.trim()).filter(Boolean));
 
-    // 2) Prepara el payload
+    if (!ingredients.length) {
+      debugEl.textContent = '❌ Por favor, introduce al menos un ingrediente.';
+      submitBtn.disabled = false;
+      return;
+    }
+
     const payload = { ingredients };
-
-    // 3) Muestra en el panel debug lo que vas a enviar
-    debugEl.textContent = `Payload:\n${JSON.stringify(payload, null, 2)}\n\nEnviando...`;
+    debugEl.textContent = `Payload:\n${JSON.stringify(payload, null, 2)}`;
 
     try {
-      // 4) Llama al backend
-      const res = await fetch(`${backendBase}/api/recetas/generar`, {
+      const res = await fetch(`${API_BASE}/api/recetas/generar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
-      // 5) Lee la respuesta (texto plano)
-      const text = await res.text();
-
-      // 6) Actualiza el panel debug y el área de receta
       debugEl.textContent += `\n\nHTTP ${res.status} ${res.statusText}`;
+      const text = await res.text();
       recipeEl.textContent = text;
-
     } catch (err) {
-      console.error(err);
       debugEl.textContent += `\n\n❌ Error: ${err.message}`;
       recipeEl.textContent = '❌ No se pudo generar la receta.';
+    } finally {
+      submitBtn.disabled = false;
     }
   });
 });

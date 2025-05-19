@@ -63,22 +63,15 @@ public class RecipeService {
             throw new IllegalStateException("No se recibió respuesta de Gemini");
         }
 
-        JsonNode candidates = json.path("candidates");
-        if (candidates.isArray() && candidates.size() > 0) {
-            JsonNode first = candidates.get(0);
-
-            // Si existe “output” y no está vacío, úsalo:
-            if (first.hasNonNull("output") && !first.path("output").asText().isBlank()) {
-                return first.path("output").asText();
-            }
-
-            // Sino, busca en content.parts[0].text
-            JsonNode parts = first.path("content").path("parts");
-            if (parts.isArray() && parts.size() > 0) {
-                return parts.get(0).path("text").asText();
-            }
+        JsonNode first = json.at("/candidates/0");
+        if (first.isMissingNode()) {
+            throw new IllegalStateException("No se recibieron candidatos de Gemini");
         }
 
-        throw new IllegalStateException("Respuesta inesperada de Gemini: " + json);
+        // Intentamos “output” y si está vacío, tiramos del texto en content.parts[0].text
+                String output = first.path("output").asText().trim();
+                return !output.isEmpty()
+                        ? output
+                        : first.at("/content/parts/0/text").asText("");
     }
 }

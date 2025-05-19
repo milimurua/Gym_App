@@ -3,27 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
   <title>Recetas Gym</title>
 </head>
 <body>
-    <h1>Generador de Recetas</h1>
+    <div class="container">
+      <h1>Generador de Recetas</h1>
 
-    <form id="recipe-form">
-      <div id="ingredient-groups">
-        <div class="group">
-          <label for="ingredients">Ingredientes (separados por comas):</label><br>
-          <input type="text" class="ingredients" id="ingredients" placeholder="Ej: tomate, albahaca"/><br>
+      <form id="recipe-form">
+        <div id="ingredient-groups">
+          <div class="group">
+            <input type="text" class="ingredients" placeholder="Ej: tomate, albahaca">
+            <button type="button" class="remove-btn" title="Quitar este grupo">×</button>
+          </div>
         </div>
+
+        <div class="buttons">
+          <button type="button" class="btn btn-add" id="add-group">➕ Añadir grupo</button>
+          <button type="submit" class="btn btn-submit" id="generate-btn">Generar receta</button>
+        </div>
+      </form>
+
+      <div class="status">
+        <h2>Debug</h2>
+        <pre id="debug"></pre>
+
+        <h2>Respuesta</h2>
+        <pre id="recipe">—</pre>
       </div>
-      <button type="button" id="add-group">➕ Añadir otro grupo</button>
-      <button type="submit">Generar receta</button>
-    </form>
-  
-    <h2>Debug</h2>
-    <pre id="debug" style="background:#f4f4f4;padding:10px;"></pre>
-  
-    <h2>Respuesta</h2>
-    <pre id="recipe" style="white-space: pre-wrap; margin-top: 20px;"></pre>
+    </div>
 
     <script> window.API_BASE = 'http://localhost:8080'; </script>
     <script src="../src/index.js" defer></script>
