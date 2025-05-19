@@ -31,6 +31,7 @@ public class RecipeController {
         String joined = String.join(", ", ingredients);
         // Llamada a Gemini a través del servicio
         String result = recipeService.generateText(joined);
+        System.out.println(result);
         logger.info("[GENERATE] Respuesta de Gemini: {}", result);
         return ResponseEntity.ok(result);
     }

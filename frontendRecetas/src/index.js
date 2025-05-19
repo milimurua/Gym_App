@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Detecta host dinámicamente, pero fuerza el puerto 8080
-  const backendBase = `${window.location.protocol}//${window.location.hostname}:8080`;
+  const backendBase = window.API_BASE;
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
