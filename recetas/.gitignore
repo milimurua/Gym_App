@@ -1,0 +1,15 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+build/
+bin/
+
+# Spring Boot local config
+src/main/resources/application*.properties
+
+# Logs y sistema
+*.log
+.DS_Store
