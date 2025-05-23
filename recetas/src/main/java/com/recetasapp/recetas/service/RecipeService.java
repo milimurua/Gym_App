@@ -69,9 +69,9 @@ public class RecipeService {
         }
 
         // Intentamos “output” y si está vacío, tiramos del texto en content.parts[0].text
-                String output = first.path("output").asText().trim();
-                return !output.isEmpty()
-                        ? output
-                        : first.at("/content/parts/0/text").asText("");
+        String output = first.path("output").asText().trim();
+        return !output.isEmpty()
+                ? output
+                : first.at("/content/parts/0/text").asText("");
     }
 }

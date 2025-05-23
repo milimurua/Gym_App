@@ -1,13 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form            = document.getElementById('recipe-form');
   const addBtn          = document.getElementById('add-group');
-  const debugEl         = document.getElementById('debug');
   const recipeEl        = document.getElementById('recipe');
   const submitBtn       = document.getElementById('generate-btn');
   const groupsContainer = document.getElementById('ingredient-groups');
   const API_BASE        = window.API_BASE || '';
 
-  // Crear nuevo grupo con botón de remover
+  //función de notificación
+  function showNotification(message, duration = 3000) {
+    const container = document.getElementById('notification-container');
+    const notif = document.createElement('div');
+    notif.className = 'notification';
+    notif.textContent = message;
+    container.appendChild(notif);
+    requestAnimationFrame(() => notif.classList.add('show'));
+    setTimeout(() => {
+      notif.classList.remove('show');
+      notif.addEventListener('transitionend', () => notif.remove());
+    }, duration);
+  }
+
+  //Crear nuevo grupo
   function createGroup() {
     const div = document.createElement('div');
     div.className = 'group';
@@ -20,35 +33,33 @@ document.addEventListener('DOMContentLoaded', () => {
     groupsContainer.appendChild(div);
   }
 
-  // Asignar remover al grupo inicial
+  //Remover grupos
   document.querySelectorAll('.group .remove-btn')
     .forEach(btn => btn.addEventListener('click', e => e.target.parentElement.remove()));
 
-  // Añadir grupo al hacer clic
+  //boton Añadir un grupo --> busca la función de crear un grupo y la aplica
   addBtn.addEventListener('click', createGroup);
 
-  // Manejar envío
+  //Envío de datos al backend
   form.addEventListener('submit', async e => {
     e.preventDefault();
     submitBtn.disabled = true;
     recipeEl.textContent = '';
-    debugEl.style.display = 'block';
-    debugEl.textContent = 'Preparando petición...';
+    showNotification('Preparando petición...', 1000);
 
-    // Recoger ingredientes
+    //Captura los ingredientes
     const inputs = Array.from(document.querySelectorAll('.ingredients'));
     const ingredients = inputs
-      .flatMap(i => i.value.split(',')
-      .map(s => s.trim()).filter(Boolean));
+      .flatMap(i => i.value.split(',').map(s => s.trim()).filter(Boolean));
 
     if (!ingredients.length) {
-      debugEl.textContent = '❌ Por favor, introduce al menos un ingrediente.';
+      showNotification('❌ Introduce al menos un ingrediente.', 5000);
       submitBtn.disabled = false;
       return;
     }
 
+    //carga los ingredientes
     const payload = { ingredients };
-    debugEl.textContent = `Payload:\n${JSON.stringify(payload, null, 2)}`;
 
     try {
       const res = await fetch(`${API_BASE}/api/recetas/generar`, {
@@ -56,12 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      debugEl.textContent += `\n\nHTTP ${res.status} ${res.statusText}`;
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      }
+
       const text = await res.text();
       recipeEl.textContent = text;
+      showNotification('✅ Receta generada correctamente');
     } catch (err) {
-      debugEl.textContent += `\n\n❌ Error: ${err.message}`;
       recipeEl.textContent = '❌ No se pudo generar la receta.';
+      showNotification(`❌ Error: ${err.message}`, 5000);
     } finally {
       submitBtn.disabled = false;
     }
